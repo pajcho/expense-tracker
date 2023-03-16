@@ -1,0 +1,17 @@
+# Auto-detect text files
+* text=auto
+
+# These files must always use LF for tools to work
+*.css eol=lf
+*.html eol=lf
+*.js eol=lf
+*.json eol=lf
+*.md eol=lf
+*.patch eol=lf
+*.scss eol=lf
+*.svg eol=lf
+*.ts eol=lf
+
+# Lock files
+package-lock.json -diff
+yarn.lock -diff
