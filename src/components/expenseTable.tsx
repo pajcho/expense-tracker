@@ -4,6 +4,7 @@ import { ExpenseCategory } from '@/models/expenseCategory';
 import { ExpenseItem } from '@/models/expenseItem';
 import { money } from '@/utils/money';
 import { formatDate } from '@/utils/date';
+import { Button, Form, Input } from 'antd';
 
 function ExpenseCategory({ name, projected, expenses, children }: PropsWithChildren<ExpenseCategory>) {
   let [expanded, setExpanded] = React.useState(false);
@@ -116,105 +117,95 @@ function ExpenseTotal({ categories }: { categories: ExpenseCategory[] }) {
   );
 }
 
-function ExpenseItemForm({ name }: PropsWithChildren<ExpenseCategory>) {
+function ExpenseTableForm({
+  placeholder,
+  type,
+  children,
+}: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense' }>) {
   const [showForm, setShowForm] = React.useState(false);
+  const formIcon = type === 'category' ? ChevronRight : CornerDownRight;
+
+  const handleEscape = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setShowForm(false);
+    }
+  };
+  const saveItem = (values: any) => {
+    console.log(values);
+  };
+
+  const FormIcon = showForm ? formIcon : Plus;
 
   return (
     <>
-      <tr className="border-b bg-white dark:border-gray-700 dark:bg-gray-800 [&:last-child]:border-0">
+      <tr className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600 [&:last-child]:border-0">
         <th
-          colSpan={2}
+          colSpan={3}
           scope="row"
           className="whitespace-nowrap py-2 pl-6 font-light text-gray-900 dark:text-white [&:last-child]:pr-6"
         >
-          <div className="flex flex-row items-center gap-2 ">
-            {!showForm && (
-              <button
+          <div className="flex flex-row items-center gap-2">
+            <FormIcon className="text-gray-300" size={15} />
+            {showForm ? (
+              <>
+                <Form onFinish={saveItem} layout="horizontal" className="flex w-full gap-2">
+                  <Form.Item name="name" noStyle>
+                    <Input
+                      autoFocus
+                      bordered={false}
+                      onKeyDown={handleEscape}
+                      placeholder={placeholder}
+                      className="p-0"
+                    ></Input>
+                  </Form.Item>
+                  <Form.Item noStyle>
+                    <Button htmlType="submit" className="py-1 px-2 text-2xs font-light">
+                      Save
+                    </Button>
+                  </Form.Item>
+                  <Button
+                    type="text"
+                    className="py-1 px-2 text-2xs font-light"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowForm(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Form>
+              </>
+            ) : (
+              <Button
+                type="link"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowForm(!showForm);
                 }}
-                className="flex items-center gap-2 py-1 px-2 text-xs font-light text-gray-400"
+                className="flex w-full items-center gap-2 p-0 text-xs font-light text-gray-400"
               >
-                <Plus size={10} />
-                New expense in {name}
-              </button>
-            )}
-            {showForm && (
-              <input
-                type="text"
-                className="w-2 min-w-max flex-1 border-b bg-inherit px-2 py-1 py-1"
-                placeholder="Expense name..."
-              ></input>
+                {children}
+              </Button>
             )}
           </div>
         </th>
-        <td className="py-2 pl-6 text-right [&:last-child]:pr-6">
-          {showForm && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setShowForm(!showForm);
-              }}
-              className="rounded border py-1 px-2 text-2xs font-light"
-            >
-              Cancel
-            </button>
-          )}
-        </td>
       </tr>
     </>
   );
 }
 
-function ExpenseCategoryForm() {
-  const [showForm, setShowForm] = React.useState(false);
-
+function ExpenseItemForm({ name }: PropsWithChildren<ExpenseCategory>) {
   return (
-    <>
-      <tr className="border-b bg-white dark:border-gray-700 dark:bg-gray-800 [&:last-child]:border-0">
-        <th
-          colSpan={2}
-          scope="row"
-          className="whitespace-nowrap py-4 pl-6 font-light text-gray-900 dark:text-white [&:last-child]:pr-6"
-        >
-          <div className="flex flex-row items-center gap-2 ">
-            {!showForm && (
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowForm(!showForm);
-                }}
-                className="flex items-center gap-2 py-1 px-2 text-xs font-light text-gray-400"
-              >
-                <Plus size={10} />
-                New category
-              </button>
-            )}
-            {showForm && (
-              <input
-                type="text"
-                className="w-2 min-w-max flex-1 border-b bg-inherit px-2 py-1 py-1"
-                placeholder="Enter category name..."
-              ></input>
-            )}
-          </div>
-        </th>
-        <td className="py-2 pl-6 text-right [&:last-child]:pr-6">
-          {showForm && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setShowForm(!showForm);
-              }}
-              className="rounded border py-1 px-2 text-2xs font-light"
-            >
-              Cancel
-            </button>
-          )}
-        </td>
-      </tr>
-    </>
+    <ExpenseTableForm placeholder="Expense name..." type="expense">
+      New expense in {name}
+    </ExpenseTableForm>
+  );
+}
+function ExpenseCategoryForm() {
+  return (
+    <ExpenseTableForm placeholder="Enter category name..." type="category">
+      New category
+    </ExpenseTableForm>
   );
 }
 
@@ -248,10 +239,10 @@ export function ExpenseTable({ categories }: { categories: ExpenseCategory[] }) 
               {item.expenses.map((expense) => (
                 <ExpenseItem {...expense} key={expense.id} />
               ))}
-              <ExpenseItemForm {...item} />
+              <ExpenseItemForm {...item} key="item-form" />
             </ExpenseCategory>
           ))}
-          <ExpenseCategoryForm />
+          <ExpenseCategoryForm key="new-category" />
         </tbody>
         <tfoot>
           <ExpenseTotal categories={categories} />
