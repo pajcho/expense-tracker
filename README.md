@@ -1,38 +1,46 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Expense Tracker
 
-## Getting Started
+This is Expense tracking Next.js project using PlanetScale with Prisma for database access
 
-First, run the development server:
+- GitHub with code examples is [HERE](https://github.com/leerob/leerob.io/blob/main/pages/api/views/index.ts)
+- PlanetScale + Prisma + Next.js tutorial is [HERE](https://planetscale.com/blog/how-to-setup-next-js-with-prisma-and-planetscale)
+- Prisma docs are [HERE](https://www.prisma.io/docs/concepts/components/prisma-client)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+### Useful PlanetScale commands
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Open local connection
+  - `pscale connect YOUR-DB-NAME-HERE main --port 3309`
+- Connect to mysql shell
+  - `pscale shell YOUR-DB-NAME-HERE main` (_You can exit the MySQL shell by typing `exit` and hitting enter._)
+- Promote branch to production
+  - `pscale branch promote YOUR-DB-NAME-HERE main`
+- Install PlanetScale CLI by following [these steps](https://planetscale.com/docs/concepts/planetscale-environment-setup)
+- Enable safe migrations
+  - `pscale branch safe-migrations enable YOUR-DB-NAME-HERE main`
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Making changes to the database
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Step-by-step tutorial is [HERE](https://planetscale.com/docs/prisma/automatic-prisma-migrations#execute-succeeding-prisma-migrations-in-planetscale)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. Create a new development branch from main called `add-subtitle`:
+   - `pscale branch create YOUR-DB-NAME-HERE add-subtitle`
+2. Close the proxy connection to your `main` branch (if still open) and connect to the new `add-subtitle` development branch:
+   - `pscale connect YOUR-DB-NAME-HERE add-subtitle --port 3309`
+3. In the prisma/schema.prisma file, update the model:
+   - Add a new subtitle field:
+   - `subtitle String @db.VarChar(255)`
+4. Run db push again to update the schema in PlanetScale:
+   - `npx prisma db push`
+5. Open a deploy request for your `add-subtitle` branch, so that you can deploy these changes to main.
+   - You can complete the deploy request either in the web app or with the `pscale deploy-request` command.
+   - `pscale deploy-request create YOUR-DB-NAME-HERE add-subtitle`
+   - `pscale deploy-request deploy YOUR-DB-NAME-HERE 1`
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Useful Prisma commands
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Re-generate prisma client with every schema change
+  - `prisma generate`
+- Push prisma changes inside `prisma.schema` to PlanetScale with
+  - `npx prisma db push`
+- Run prisma studio in browser
+  - `npx prisma studio` (Opens up in a new browser tab http://localhost:5555/)
