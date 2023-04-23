@@ -1,4 +1,4 @@
-export interface ExpenseItem {
+export interface ItemModel {
   id: string;
   name: string;
   actual: number;

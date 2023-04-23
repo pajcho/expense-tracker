@@ -1,9 +1,9 @@
 import Head from 'next/head';
-import { ExpenseCategory } from '@/models/expenseCategory';
+import { CategoryModel } from '@/models/category.model';
 import { ExpenseTable } from '@/components/expenseTable';
 
 export default function Home() {
-  const categories: ExpenseCategory[] = [
+  const categories: CategoryModel[] = [
     {
       id: '1',
       name: 'Food',
