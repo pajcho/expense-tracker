@@ -7,7 +7,7 @@ export function ExpenseTableForm({
   type,
   categoryId,
   children,
-}: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense'; categoryId: number }>) {
+}: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense'; categoryId?: number }>) {
   const [showForm, setShowForm] = React.useState(false);
   const formIcon = type === 'category' ? ChevronRight : CornerDownRight;
 
