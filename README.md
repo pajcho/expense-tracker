@@ -1,6 +1,6 @@
 ## Expense Tracker
 
-This is Expense tracking Next.js project using PlanetScale with Prisma for database access
+This is Expense tracking [Next.js](https://nextjs.org/) project hosted on [Vercel](https://vercel.com/) using [PlanetScale](https://planetscale.com/) database with [Prisma ORM](https://www.prisma.io/)
 
 - GitHub with code examples is [HERE](https://github.com/leerob/leerob.io/blob/main/pages/api/views/index.ts)
 - PlanetScale + Prisma + Next.js tutorial is [HERE](https://planetscale.com/blog/how-to-setup-next-js-with-prisma-and-planetscale)
