@@ -5,8 +5,9 @@ import { Button, Form, Input } from 'antd';
 export function ExpenseTableForm({
   placeholder,
   type,
+  categoryId,
   children,
-}: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense' }>) {
+}: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense'; categoryId: number }>) {
   const [showForm, setShowForm] = React.useState(false);
   const formIcon = type === 'category' ? ChevronRight : CornerDownRight;
 
@@ -21,6 +22,7 @@ export function ExpenseTableForm({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: values.name,
+        categoryId: type === 'expense' ? categoryId : undefined,
       }),
     });
     if (response.status !== 200) {

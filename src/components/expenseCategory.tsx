@@ -4,14 +4,17 @@ import { money } from '@/utils/money';
 import { CollapsableTableHeader } from '@/components/collapsableTableHeader';
 import { CategoryModel } from '@/models/category.model';
 
-export function ExpenseCategory({ name, projected, expenses, children }: PropsWithChildren<CategoryModel>) {
+export function ExpenseCategory({ name, expenses, children }: PropsWithChildren<CategoryModel>) {
+  // Until we figure out how to implement this on the category level
+  const projected = 0;
+
   let [expanded, setExpanded] = React.useState(false);
-  const actual = expenses.reduce((sum, expense) => {
-    return sum + expense.actual;
+  const amount = expenses.reduce((sum, expense) => {
+    return sum + expense.amount;
   }, 0);
 
   const font = expanded ? 'font-medium' : 'font-light';
-  const variance = projected - actual;
+  const variance = projected - amount;
 
   const VarianceIcon = variance === 0 ? Minus : Circle;
   const varianceColor = variance > 0 ? 'text-green-600' : variance === 0 ? 'text-yellow-600' : 'text-red-600';
@@ -35,9 +38,12 @@ export function ExpenseCategory({ name, projected, expenses, children }: PropsWi
           <CollapsableTableHeader>{name}</CollapsableTableHeader>
         </th>
         <td className="py-4 pl-6 text-right [&:last-child]:pr-6">{money(projected)}</td>
-        <td title={varianceTitle} className="flex flex-row items-center justify-end py-4 pl-6 [&:last-child]:pr-6">
-          {!!actual && <VarianceIcon className={`${varianceColor} mr-auto ml-1 fill-current`} size={10}></VarianceIcon>}
-          {money(actual)}
+        <td
+          title={varianceTitle}
+          className="flex flex-row items-center justify-end gap-2 py-4 pl-6 [&:last-child]:pr-6"
+        >
+          {!!amount && <VarianceIcon className={`${varianceColor} mr-auto ml-1 fill-current`} size={10}></VarianceIcon>}
+          {money(amount)}
         </td>
       </tr>
       {expanded && children}

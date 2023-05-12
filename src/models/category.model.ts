@@ -1,8 +1,11 @@
 import { ItemModel } from '@/models/item.model';
 
 export interface CategoryModel {
-  id: string;
+  id: number;
   name: string;
-  projected: number;
+  description: string | null;
+  // projected: number; // Might add this in the future
   expenses: ItemModel[];
+  createdAt: string;
+  updatedAt: string;
 }

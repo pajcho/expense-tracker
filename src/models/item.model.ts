@@ -1,7 +1,10 @@
 export interface ItemModel {
-  id: string;
+  id: number;
   name: string;
-  actual: number;
-  categoryId: string;
+  description: string | null;
+  amount: number;
+  categoryId: number;
   date: string;
+  createdAt: string;
+  updatedAt: string;
 }
