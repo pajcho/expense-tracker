@@ -3,23 +3,6 @@ import { ExpenseTable } from '@/components/expenseTable';
 import React from 'react';
 
 export default function Home() {
-  const [categories, setCategories] = React.useState([]);
-
-  const fetchCategories = () => {
-    fetch(`/api/category`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCategories(data);
-      })
-      .catch((error) => {
-        console.log('Error loading categories!!', error);
-      });
-  };
-
-  React.useEffect(() => {
-    fetchCategories();
-  }, []);
-
   return (
     <>
       <Head>
@@ -29,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="mt-0">
-        <ExpenseTable categories={categories} />
+        <ExpenseTable />
       </main>
     </>
   );

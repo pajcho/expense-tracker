@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { ChevronRight, CornerDownRight, Plus } from 'react-feather';
 import { Button, Form, Input } from 'antd';
+import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
 
 export function ExpenseTableForm({
   placeholder,
@@ -8,32 +9,38 @@ export function ExpenseTableForm({
   categoryId,
   children,
 }: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense'; categoryId?: number }>) {
+  const { addCategory, addExpense } = React.useContext(CategoryContext) as CategoryContextType;
+
   const [showForm, setShowForm] = React.useState(false);
   const formIcon = type === 'category' ? ChevronRight : CornerDownRight;
 
   const handleEscape = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
-      setShowForm(false);
+      showHideForm(false);
     }
   };
+
   const saveItem = async (values: any) => {
-    const response = await fetch(`/api/${type}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: values.name,
-        categoryId: type === 'expense' ? categoryId : undefined,
-      }),
-    });
-    if (response.status !== 200) {
-      console.log(`Error creating "${values.name}" ${type}!!!`);
+    if (type === 'category') {
+      addCategory.mutate({ name: values.name, description: null }, { onSuccess: () => showHideForm(false) });
     } else {
-      setShowForm(false);
-      console.log(`Successfully created "${values.name}" ${type}!!!`);
+      addExpense.mutate({ name: values.name, description: null, categoryId }, { onSuccess: () => showHideForm(false) });
     }
   };
 
   const FormIcon = showForm ? formIcon : Plus;
+
+  const showHideForm = (showForm: boolean): void => {
+    setShowForm(showForm);
+
+    if (!showForm) {
+      addCategory.reset();
+      addExpense.reset();
+    }
+  };
+
+  const isLoading = type === 'category' ? addCategory.isLoading : addExpense.isLoading;
+  const isError = type === 'category' ? addCategory.isError : addExpense.isError;
 
   return (
     <>
@@ -44,7 +51,7 @@ export function ExpenseTableForm({
           className="whitespace-nowrap py-2 pl-6 font-light text-gray-900 dark:text-white [&:last-child]:pr-6"
         >
           <div className="flex flex-row items-center gap-2">
-            <FormIcon className="text-gray-300" size={15} />
+            <FormIcon className={`${isError ? 'text-red-500' : 'text-gray-300'}`} size={15} />
             {showForm ? (
               <>
                 <Form onFinish={saveItem} layout="horizontal" className="flex w-full gap-2">
@@ -59,7 +66,7 @@ export function ExpenseTableForm({
                   </Form.Item>
                   <Form.Item noStyle>
                     <Button htmlType="submit" className="py-1 px-2 text-2xs font-light">
-                      Save
+                      {isLoading ? 'Saving...' : 'Save'}
                     </Button>
                   </Form.Item>
                   <Button
@@ -67,7 +74,7 @@ export function ExpenseTableForm({
                     className="py-1 px-2 text-2xs font-light"
                     onClick={(e) => {
                       e.preventDefault();
-                      setShowForm(false);
+                      showHideForm(false);
                     }}
                   >
                     Cancel
@@ -79,7 +86,7 @@ export function ExpenseTableForm({
                 type="link"
                 onClick={(e) => {
                   e.preventDefault();
-                  setShowForm(!showForm);
+                  showHideForm(!showForm);
                 }}
                 className="flex w-full items-center gap-2 p-0 text-xs font-light text-gray-400"
               >
