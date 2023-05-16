@@ -2,6 +2,30 @@
 
 This is Expense tracking [Next.js](https://nextjs.org/) project hosted on [Vercel](https://vercel.com/) using [PlanetScale](https://planetscale.com/) database with [Prisma ORM](https://www.prisma.io/)
 
+### Roadmap
+
+- [ ] Success/error messages (i.e. [react-toastify](https://fkhadra.github.io/react-toastify/introduction))
+- [ ] Add category description (perhaps move the form inside a modal/slideover)
+- [ ] Add expense description, date and amount (perhaps move the form inside a modal/slideover)
+- [ ] Delete expenses + confirmation popup
+- [ ] Delete categories + confirmation popup
+  - Think about how to delete categories. Can we delete a category that has expenses linked? Do we delete all expenses as well?
+- [ ] Update expenses (name, description, amount, date)
+  - Date will default to today, but user should be able to enter any custom date
+- [ ] Update categories (name, description)
+- [ ] Expand collapse all categories
+- [ ] Custom category icons
+- [ ] Expense tagging and later tag based filters
+- [ ] Filter expenses by date (current month, last month, custom range, all time)
+  - Each period selected will compare the amounts with previous period
+- [ ] Currency selection on top
+- [ ] Social login before you can enter expenses
+  - Expenses will be linked and private to the account being used
+  - Perhaps a sharable link so that others can collaborate?
+- [ ] Charts and then more charts
+
+### Useful links
+
 - GitHub with code examples is [HERE](https://github.com/leerob/leerob.io/blob/main/pages/api/views/index.ts)
 - PlanetScale + Prisma + Next.js tutorial is [HERE](https://planetscale.com/blog/how-to-setup-next-js-with-prisma-and-planetscale)
 - Prisma docs are [HERE](https://www.prisma.io/docs/concepts/components/prisma-client)
