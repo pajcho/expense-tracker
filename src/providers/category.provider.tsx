@@ -62,6 +62,8 @@ function CategoryProvider({ children }: PropsWithChildren) {
             name: expense.name || undefined,
             description: expense.description || undefined,
             categoryId: expense.categoryId || undefined,
+            amount: expense.amount,
+            date: expense.date,
           }),
         });
 

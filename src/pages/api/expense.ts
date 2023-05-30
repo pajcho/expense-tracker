@@ -27,6 +27,7 @@ async function createExpense(req: NextApiRequest, res: NextApiResponse<ItemModel
         description: body?.description,
         amount: new Prisma.Decimal(body?.amount || Math.random() * 1000),
         categoryId: body?.categoryId || 1,
+        date: body?.date || undefined,
       },
     });
 

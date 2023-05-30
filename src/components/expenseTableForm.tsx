@@ -1,46 +1,63 @@
 import React, { PropsWithChildren } from 'react';
-import { ChevronRight, CornerDownRight, Plus } from 'react-feather';
-import { Button, Form, Input } from 'antd';
+import { Plus } from 'react-feather';
+import { Button, DatePicker, Form, Input, InputRef, Modal } from 'antd';
 import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
+import dayjs from 'dayjs';
 
 export function ExpenseTableForm({
-  placeholder,
   type,
   categoryId,
   children,
-}: PropsWithChildren<{ placeholder: string; type: 'category' | 'expense'; categoryId?: number }>) {
+}: PropsWithChildren<{ type: 'category' | 'expense'; categoryId?: number }>) {
   const { addCategory, addExpense } = React.useContext(CategoryContext) as CategoryContextType;
 
   const [showForm, setShowForm] = React.useState(false);
-  const formIcon = type === 'category' ? ChevronRight : CornerDownRight;
 
   const handleEscape = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
-      showHideForm(false);
+      setShowForm(false);
     }
   };
 
   const saveItem = async (values: any) => {
     if (type === 'category') {
-      addCategory.mutate({ name: values.name, description: null }, { onSuccess: () => showHideForm(false) });
+      addCategory.mutate(
+        { name: values.name, description: values.description },
+        { onSuccess: () => setShowForm(false) }
+      );
     } else {
-      addExpense.mutate({ name: values.name, description: null, categoryId }, { onSuccess: () => showHideForm(false) });
-    }
-  };
-
-  const FormIcon = showForm ? formIcon : Plus;
-
-  const showHideForm = (showForm: boolean): void => {
-    setShowForm(showForm);
-
-    if (!showForm) {
-      addCategory.reset();
-      addExpense.reset();
+      addExpense.mutate(
+        { name: values.name, description: values.description, categoryId, amount: values.amount, date: values.date },
+        { onSuccess: () => setShowForm(false) }
+      );
     }
   };
 
   const isLoading = type === 'category' ? addCategory.isLoading : addExpense.isLoading;
   const isError = type === 'category' ? addCategory.isError : addExpense.isError;
+
+  const inputRef = React.createRef<InputRef>();
+
+  function openForm(e: React.MouseEvent) {
+    e.preventDefault();
+    setShowForm(true);
+  }
+
+  function handleCancel() {
+    setShowForm(false);
+  }
+
+  React.useEffect(() => {
+    if (showForm) {
+      // Focus input element when form is displayed
+      const timeoutId = setTimeout(() => inputRef.current?.focus());
+      return () => clearTimeout(timeoutId);
+    } else {
+      // Reset mutations when form is closed
+      type === 'category' && addCategory.reset();
+      type === 'expense' && addExpense.reset();
+    }
+  }, [showForm]);
 
   return (
     <>
@@ -51,47 +68,78 @@ export function ExpenseTableForm({
           className="whitespace-nowrap py-2 pl-6 font-light text-gray-900 dark:text-white [&:last-child]:pr-6"
         >
           <div className="flex flex-row items-center gap-2">
-            <FormIcon className={`${isError ? 'text-red-500' : 'text-gray-300'}`} size={15} />
-            {showForm ? (
-              <>
-                <Form onFinish={saveItem} layout="horizontal" className="flex w-full gap-2">
-                  <Form.Item name="name" noStyle>
-                    <Input
-                      autoFocus
-                      bordered={false}
-                      onKeyDown={handleEscape}
-                      placeholder={placeholder}
-                      className="p-0"
-                    ></Input>
-                  </Form.Item>
-                  <Form.Item noStyle>
-                    <Button htmlType="submit" className="py-1 px-2 text-2xs font-light">
-                      {isLoading ? 'Saving...' : 'Save'}
-                    </Button>
-                  </Form.Item>
+            <Plus className={`${isError ? 'text-red-500' : 'text-gray-300'}`} size={15} />
+            <Button
+              type="link"
+              onClick={openForm}
+              className="flex w-full items-center gap-2 p-0 text-xs font-light text-gray-400"
+            >
+              {children}
+            </Button>
+            {showForm && (
+              <Modal
+                title={`Add new ${type}`}
+                open={true}
+                onCancel={handleCancel}
+                footer={[
                   <Button
+                    key="back"
                     type="text"
-                    className="py-1 px-2 text-2xs font-light"
                     onClick={(e) => {
                       e.preventDefault();
-                      showHideForm(false);
+                      setShowForm(false);
                     }}
                   >
                     Cancel
-                  </Button>
-                </Form>
-              </>
-            ) : (
-              <Button
-                type="link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  showHideForm(!showForm);
-                }}
-                className="flex w-full items-center gap-2 p-0 text-xs font-light text-gray-400"
+                  </Button>,
+                  <Button form="expenseForm" key="submit" htmlType="submit">
+                    {isLoading ? 'Saving...' : 'Save'}
+                  </Button>,
+                ]}
               >
-                {children}
-              </Button>
+                <Form
+                  id="expenseForm"
+                  onKeyDown={handleEscape}
+                  onFinish={saveItem}
+                  layout="vertical"
+                  size="large"
+                  className="py-5"
+                >
+                  <Form.Item
+                    name="name"
+                    label="Name:"
+                    rules={[{ required: true, message: 'Please input expense name' }]}
+                  >
+                    <Input ref={inputRef} placeholder="Enter name"></Input>
+                  </Form.Item>
+
+                  {type === 'expense' && (
+                    <div className="flex flex-row gap-4">
+                      <Form.Item
+                        name="amount"
+                        label="Amount:"
+                        className="w-full"
+                        rules={[{ required: true, message: 'Expense amount is required' }]}
+                      >
+                        <Input type="number" placeholder="Enter amount"></Input>
+                      </Form.Item>
+                      <Form.Item
+                        name="date"
+                        label="Date:"
+                        className="w-full"
+                        initialValue={dayjs(new Date())}
+                        rules={[{ required: true, message: 'Purchase date is required' }]}
+                      >
+                        <DatePicker className="w-full" format={'DD MMMM, YYYY'} />
+                      </Form.Item>
+                    </div>
+                  )}
+
+                  <Form.Item name="description" label="Description:">
+                    <Input.TextArea rows={4} placeholder="Enter description"></Input.TextArea>
+                  </Form.Item>
+                </Form>
+              </Modal>
             )}
           </div>
         </th>

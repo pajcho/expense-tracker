@@ -4,7 +4,7 @@ import { money } from '@/utils/money';
 import { CollapsableTableHeader } from '@/components/collapsableTableHeader';
 import { CategoryModel } from '@/models/category.model';
 
-export function ExpenseCategory({ name, expenses, children }: PropsWithChildren<CategoryModel>) {
+export function ExpenseCategory({ name, description, expenses, children }: PropsWithChildren<CategoryModel>) {
   // Until we figure out how to implement this on the category level
   const projected = 0;
 
@@ -35,7 +35,9 @@ export function ExpenseCategory({ name, expenses, children }: PropsWithChildren<
           scope="row"
           className={`${font} whitespace-nowrap py-4 pl-6 text-gray-900 dark:text-white [&:last-child]:pr-6`}
         >
-          <CollapsableTableHeader>{name}</CollapsableTableHeader>
+          <CollapsableTableHeader>
+            {name} {description && <small className="flex w-full text-gray-300">&nbsp;- {description}</small>}
+          </CollapsableTableHeader>
         </th>
         <td className="py-4 pl-6 text-right [&:last-child]:pr-6">{money(projected)}</td>
         <td
