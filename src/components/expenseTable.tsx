@@ -32,16 +32,16 @@ export function ExpenseTable() {
           </thead>
         ) : (
           <>
-            <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <thead className="border-b bg-gray-50 text-xs uppercase text-gray-700 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="w-full select-none py-3 pl-6 [&:last-child]:pr-6">
                   Monthly expense
                 </th>
                 <th scope="col" className="select-none py-3 pl-6 text-right [&:last-child]:pr-6">
-                  <SortableTableHeader>Projected</SortableTableHeader>
-                </th>
-                <th scope="col" className="select-none py-3 pl-6 text-right [&:last-child]:pr-6">
                   <SortableTableHeader>Actual</SortableTableHeader>
+                </th>
+                <th scope="col" className="select-none text-right [&:last-child]:pr-6">
+                  {' '}
                 </th>
               </tr>
             </thead>
@@ -56,7 +56,7 @@ export function ExpenseTable() {
               ))}
               <ExpenseCategoryForm key="new-category" />
             </tbody>
-            <tfoot>
+            <tfoot className="border-t dark:border-gray-700">
               <ExpenseTotal categories={categories} />
             </tfoot>
           </>
