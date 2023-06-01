@@ -5,63 +5,77 @@ import dayjs from 'dayjs';
 
 export function ExpenseDialog({
   type,
-  isOpen,
   categoryId,
   onCancel = () => {},
   onSuccess = () => {},
 }: PropsWithChildren<{
   type: 'category' | 'expense';
-  isOpen: boolean;
   categoryId?: number;
   onCancel: () => void;
   onSuccess: () => void;
 }>) {
   const { addCategory, addExpense } = React.useContext(CategoryContext) as CategoryContextType;
+  const [form] = Form.useForm();
 
   const handleEscape = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
-      onCancel();
+      closeDialog();
     }
   };
 
   const saveItem = async (values: any) => {
     if (type === 'category') {
-      addCategory.mutate({ name: values.name, description: values.description }, { onSuccess: () => onSuccess() });
+      addCategory.mutate(
+        { name: values.name, description: values.description },
+        {
+          onSuccess: () => {
+            form.resetFields();
+            return onSuccess();
+          },
+        }
+      );
     } else {
       addExpense.mutate(
         { name: values.name, description: values.description, categoryId, amount: values.amount, date: values.date },
-        { onSuccess: () => onSuccess() }
+        {
+          onSuccess: () => {
+            form.resetFields();
+            return onSuccess();
+          },
+        }
       );
     }
   };
+
+  function closeDialog() {
+    // Reset mutations when form is closed
+    type === 'category' && addCategory.reset();
+    type === 'expense' && addExpense.reset();
+
+    onCancel();
+  }
 
   const isLoading = type === 'category' ? addCategory.isLoading : addExpense.isLoading;
   const inputRef = React.createRef<InputRef>();
 
   React.useEffect(() => {
-    if (isOpen) {
-      // Focus input element when form is displayed
-      const timeoutId = setTimeout(() => inputRef.current?.focus());
-      return () => clearTimeout(timeoutId);
-    } else {
-      // Reset mutations when form is closed
-      type === 'category' && addCategory.reset();
-      type === 'expense' && addExpense.reset();
-    }
-  }, [isOpen]);
+    // Focus input element when form is displayed
+    const timeoutId = setTimeout(() => inputRef.current?.focus());
+    return () => clearTimeout(timeoutId);
+  }, [inputRef]);
 
   return (
     <Modal
       title={`Add new ${type}`}
-      open={isOpen}
-      onCancel={onCancel}
+      open={true}
+      onCancel={closeDialog}
       footer={[
         <Button
           key="back"
           type="text"
           onClick={(e) => {
             e.preventDefault();
-            onCancel();
+            closeDialog();
           }}
         >
           Cancel
@@ -72,6 +86,7 @@ export function ExpenseDialog({
       ]}
     >
       <Form
+        form={form}
         id="expenseForm"
         onKeyDown={handleEscape}
         onFinish={saveItem}

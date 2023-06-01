@@ -39,7 +39,11 @@ function CategoryProvider({ children }: PropsWithChildren) {
         const response = await fetch(`/api/category`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: category.name || undefined, description: category.description || undefined }),
+          body: JSON.stringify({
+            id: category.id || undefined,
+            name: category.name || undefined,
+            description: category.description || undefined,
+          }),
         });
 
         if (response.status !== 200) {

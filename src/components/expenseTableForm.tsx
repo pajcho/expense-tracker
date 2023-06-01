@@ -44,13 +44,9 @@ export function ExpenseTableForm({
             >
               {children}
             </Button>
-            <ExpenseDialog
-              isOpen={showForm}
-              type={type}
-              categoryId={categoryId}
-              onCancel={handleCancel}
-              onSuccess={handleSuccess}
-            />
+            {showForm && (
+              <ExpenseDialog type={type} categoryId={categoryId} onCancel={handleCancel} onSuccess={handleSuccess} />
+            )}
           </div>
         </th>
       </tr>
