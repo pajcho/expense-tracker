@@ -5,8 +5,8 @@ This is Expense tracking [Next.js](https://nextjs.org/) project hosted on [Verce
 ### Roadmap
 
 - [ ] Success/error messages (i.e. [react-toastify](https://fkhadra.github.io/react-toastify/introduction))
-- [ ] Add category description (perhaps move the form inside a modal/slideover)
-- [ ] Add expense description, date and amount (perhaps move the form inside a modal/slideover)
+- [x] Add category description (perhaps move the form inside a modal/slideover)
+- [x] Add expense description, date and amount (perhaps move the form inside a modal/slideover)
 - [ ] Delete expenses + confirmation popup
 - [ ] Delete categories + confirmation popup
   - Think about how to delete categories. Can we delete a category that has expenses linked? Do we delete all expenses as well?
