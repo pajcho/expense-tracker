@@ -21,13 +21,24 @@ export default async function handler(
 async function createExpense(req: NextApiRequest, res: NextApiResponse<ItemModel | ResponseMessage>) {
   const body = req.body;
   try {
-    const newEntry = await prisma.expense.create({
-      data: {
+    const newEntry = await prisma.expense.upsert({
+      create: {
         name: body.name,
         description: body?.description,
         amount: new Prisma.Decimal(body?.amount || Math.random() * 1000),
         categoryId: body?.categoryId || 1,
         date: body?.date || undefined,
+      },
+      update: {
+        name: body.name,
+        description: body?.description,
+        amount: new Prisma.Decimal(body?.amount || Math.random() * 1000),
+        categoryId: body?.categoryId || 1,
+        date: body?.date || undefined,
+      },
+      where: {
+        // Zero is an ID that will not be found, and it will indicate that a new record should be created
+        id: body?.id || 0,
       },
     });
 

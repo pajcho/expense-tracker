@@ -8,8 +8,8 @@ const FAKE_API_DELAY = 0;
 
 export type CategoryContextType = {
   categories: CategoryModel[];
-  addCategory: UseMutationResult<Response, unknown, Partial<CategoryModel>>;
-  addExpense: UseMutationResult<Response, unknown, Partial<ItemModel>>;
+  upsertCategory: UseMutationResult<Response, unknown, Partial<CategoryModel>>;
+  upsertExpense: UseMutationResult<Response, unknown, Partial<ItemModel>>;
   isLoading: boolean;
   error: unknown;
   isFetching: boolean;
@@ -33,7 +33,7 @@ function CategoryProvider({ children }: PropsWithChildren) {
     },
   });
 
-  const addCategory = useMutation({
+  const upsertCategory = useMutation({
     mutationFn: async (category: Partial<CategoryModel>) => {
       return new Promise((resolve) => setTimeout(resolve, FAKE_API_DELAY)).then(async () => {
         const response = await fetch(`/api/category`, {
@@ -56,13 +56,14 @@ function CategoryProvider({ children }: PropsWithChildren) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['category'] }),
   });
 
-  const addExpense = useMutation({
+  const upsertExpense = useMutation({
     mutationFn: async (expense: Partial<ItemModel>) => {
       return new Promise((resolve) => setTimeout(resolve, FAKE_API_DELAY)).then(async () => {
         const response = await fetch(`/api/expense`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            id: expense.id || undefined,
             name: expense.name || undefined,
             description: expense.description || undefined,
             categoryId: expense.categoryId || undefined,
@@ -84,7 +85,7 @@ function CategoryProvider({ children }: PropsWithChildren) {
   const isLoading = status === 'loading';
 
   return (
-    <CategoryContext.Provider value={{ categories: data, addCategory, addExpense, isLoading, error, isFetching }}>
+    <CategoryContext.Provider value={{ categories: data, upsertCategory, upsertExpense, isLoading, error, isFetching }}>
       {children}
     </CategoryContext.Provider>
   );

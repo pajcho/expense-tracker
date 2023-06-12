@@ -1,21 +1,18 @@
 import React, { PropsWithChildren } from 'react';
 import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
-import { Button, DatePicker, Form, Input, InputRef, Modal } from 'antd';
-import dayjs from 'dayjs';
-import { ItemModel } from '@/models/item.model';
+import { Button, Form, Input, InputRef, Modal } from 'antd';
+import { CategoryModel } from '@/models/category.model';
 
-export function ExpenseDialog({
-  expense,
-  categoryId,
+export function CategoryDialog({
+  category,
   onCancel = () => {},
   onSuccess = () => {},
 }: PropsWithChildren<{
-  expense?: ItemModel;
-  categoryId: number;
+  category?: CategoryModel;
   onCancel: () => void;
   onSuccess: () => void;
 }>) {
-  const { upsertExpense } = React.useContext(CategoryContext) as CategoryContextType;
+  const { upsertCategory } = React.useContext(CategoryContext) as CategoryContextType;
   const [form] = Form.useForm();
 
   const handleEscape = (event: React.KeyboardEvent) => {
@@ -25,15 +22,8 @@ export function ExpenseDialog({
   };
 
   const saveItem = async (values: any) => {
-    upsertExpense.mutate(
-      {
-        id: expense?.id,
-        name: values.name,
-        description: values.description,
-        categoryId,
-        amount: values.amount,
-        date: values.date,
-      },
+    upsertCategory.mutate(
+      { id: category?.id, name: values.name, description: values.description },
       {
         onSuccess: () => {
           form.resetFields();
@@ -45,11 +35,11 @@ export function ExpenseDialog({
 
   function closeDialog() {
     // Reset mutations when form is closed
-    upsertExpense.reset();
+    upsertCategory.reset();
     onCancel();
   }
 
-  const isLoading = upsertExpense.isLoading;
+  const isLoading = upsertCategory.isLoading;
   const inputRef = React.createRef<InputRef>();
 
   React.useEffect(() => {
@@ -60,7 +50,7 @@ export function ExpenseDialog({
 
   return (
     <Modal
-      title={expense ? `Edit expense` : `Add new expense`}
+      title={category ? `Edit category` : `Add new category`}
       open={true}
       onCancel={closeDialog}
       footer={[
@@ -74,14 +64,14 @@ export function ExpenseDialog({
         >
           Cancel
         </Button>,
-        <Button form="expenseForm" key="submit" htmlType="submit">
+        <Button form="categoryForm" key="submit" htmlType="submit">
           {isLoading ? 'Saving...' : 'Save'}
         </Button>,
       ]}
     >
       <Form
         form={form}
-        id="expenseForm"
+        id="categoryForm"
         onKeyDown={handleEscape}
         onFinish={saveItem}
         layout="vertical"
@@ -89,36 +79,15 @@ export function ExpenseDialog({
         className="py-5"
       >
         <Form.Item
-          initialValue={expense?.name}
+          initialValue={category?.name}
           name="name"
           label="Name:"
-          rules={[{ required: true, message: 'Please input expense name' }]}
+          rules={[{ required: true, message: 'Please input category name' }]}
         >
           <Input ref={inputRef} placeholder="Enter name"></Input>
         </Form.Item>
 
-        <div className="flex flex-row gap-4">
-          <Form.Item
-            initialValue={expense?.amount}
-            name="amount"
-            label="Amount:"
-            className="w-full"
-            rules={[{ required: true, message: 'Expense amount is required' }]}
-          >
-            <Input type="number" placeholder="Enter amount"></Input>
-          </Form.Item>
-          <Form.Item
-            name="date"
-            label="Date:"
-            className="w-full"
-            initialValue={expense ? dayjs(new Date(expense?.date)) : dayjs(new Date())}
-            rules={[{ required: true, message: 'Purchase date is required' }]}
-          >
-            <DatePicker className="w-full" format={'DD MMMM, YYYY'} />
-          </Form.Item>
-        </div>
-
-        <Form.Item initialValue={expense?.description} name="description" label="Description:">
+        <Form.Item initialValue={category?.description} name="description" label="Description:">
           <Input.TextArea rows={4} placeholder="Enter description"></Input.TextArea>
         </Form.Item>
       </Form>

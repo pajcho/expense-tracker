@@ -3,28 +3,24 @@ import { Plus } from 'react-feather';
 import { Button } from 'antd';
 import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
 import { ExpenseDialog } from '@/components/expenseDialog';
+import { CategoryDialog } from '@/components/categoryDialog';
 
 export function ExpenseTableForm({
   type,
   categoryId,
   children,
 }: PropsWithChildren<{ type: 'category' | 'expense'; categoryId?: number }>) {
-  const { addCategory, addExpense } = React.useContext(CategoryContext) as CategoryContextType;
+  const { upsertCategory, upsertExpense } = React.useContext(CategoryContext) as CategoryContextType;
   const [showForm, setShowForm] = React.useState(false);
 
-  const isError = type === 'category' ? addCategory.isError : addExpense.isError;
+  const isError = type === 'category' ? upsertCategory.isError : upsertExpense.isError;
+
+  const defaultProps = { onCancel: () => setShowForm(false), onSuccess: () => setShowForm(false) };
+  const expenseProps = { categoryId: categoryId as number, ...defaultProps };
 
   function openForm(e: React.MouseEvent) {
     e.preventDefault();
     setShowForm(true);
-  }
-
-  function handleCancel() {
-    setShowForm(false);
-  }
-
-  function handleSuccess() {
-    setShowForm(false);
   }
 
   return (
@@ -44,9 +40,8 @@ export function ExpenseTableForm({
             >
               {children}
             </Button>
-            {showForm && (
-              <ExpenseDialog type={type} categoryId={categoryId} onCancel={handleCancel} onSuccess={handleSuccess} />
-            )}
+            {showForm &&
+              (type === 'expense' ? <ExpenseDialog {...expenseProps} /> : <CategoryDialog {...defaultProps} />)}
           </div>
         </th>
       </tr>

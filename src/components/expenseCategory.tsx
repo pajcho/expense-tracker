@@ -3,10 +3,13 @@ import { Circle, Edit, Minus } from 'react-feather';
 import { money } from '@/utils/money';
 import { CollapsableTableHeader } from '@/components/collapsableTableHeader';
 import { CategoryModel } from '@/models/category.model';
+import { CategoryDialog } from '@/components/categoryDialog';
 
-export function ExpenseCategory({ id, name, description, expenses, children }: PropsWithChildren<CategoryModel>) {
+export function ExpenseCategory({ children, ...category }: PropsWithChildren<CategoryModel>) {
+  const [showForm, setShowForm] = React.useState(false);
   let [expanded, setExpanded] = React.useState(false);
-  const amount = expenses.reduce((sum, expense) => {
+
+  const amount = category.expenses.reduce((sum, expense) => {
     return sum + expense.amount;
   }, 0);
 
@@ -24,8 +27,7 @@ export function ExpenseCategory({ id, name, description, expenses, children }: P
 
   function editCategory(event: React.MouseEvent) {
     event.preventDefault();
-
-    console.log('TODO: Editing expense category [' + id + ']');
+    setShowForm(true);
   }
 
   return (
@@ -37,7 +39,10 @@ export function ExpenseCategory({ id, name, description, expenses, children }: P
           className={`${font} cursor-pointer whitespace-nowrap py-4 pl-6 text-gray-900 dark:text-white [&:last-child]:pr-6`}
         >
           <CollapsableTableHeader>
-            {name} {description && <small className="flex w-full text-gray-300">&nbsp;- {description}</small>}
+            {category.name}{' '}
+            {category.description && (
+              <small className="flex w-full text-gray-300">&nbsp;- {category.description}</small>
+            )}
           </CollapsableTableHeader>
         </th>
         <td
@@ -54,6 +59,13 @@ export function ExpenseCategory({ id, name, description, expenses, children }: P
           >
             <Edit strokeWidth={1} size={18}></Edit>
           </button>
+          {showForm && (
+            <CategoryDialog
+              category={category}
+              onCancel={() => setShowForm(false)}
+              onSuccess={() => setShowForm(false)}
+            />
+          )}
         </td>
       </tr>
       {expanded && children}
