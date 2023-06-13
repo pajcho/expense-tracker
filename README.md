@@ -10,9 +10,9 @@ This is Expense tracking [Next.js](https://nextjs.org/) project hosted on [Verce
 - [ ] Delete expenses + confirmation popup
 - [ ] Delete categories + confirmation popup
   - Think about how to delete categories. Can we delete a category that has expenses linked? Do we delete all expenses as well?
-- [ ] Update expenses (name, description, amount, date)
+- [x] Update expenses (name, description, amount, date)
   - Date will default to today, but user should be able to enter any custom date
-- [ ] Update categories (name, description)
+- [x] Update categories (name, description)
 - [ ] Expand collapse all categories
 - [ ] Custom category icons
 - [ ] Expense tagging and later tag based filters
