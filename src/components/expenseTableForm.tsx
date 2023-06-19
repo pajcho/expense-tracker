@@ -1,7 +1,6 @@
-import React, { PropsWithChildren } from 'react';
-import { Plus } from 'react-feather';
 import { Button } from 'antd';
-import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
+import { Plus } from 'react-feather';
+import React, { PropsWithChildren } from 'react';
 import { ExpenseDialog } from '@/components/expenseDialog';
 import { CategoryDialog } from '@/components/categoryDialog';
 
@@ -10,10 +9,7 @@ export function ExpenseTableForm({
   categoryId,
   children,
 }: PropsWithChildren<{ type: 'category' | 'expense'; categoryId?: number }>) {
-  const { upsertCategory, upsertExpense } = React.useContext(CategoryContext) as CategoryContextType;
   const [showForm, setShowForm] = React.useState(false);
-
-  const isError = type === 'category' ? upsertCategory.isError : upsertExpense.isError;
 
   const defaultProps = { onCancel: () => setShowForm(false), onSuccess: () => setShowForm(false) };
   const expenseProps = { categoryId: categoryId as number, ...defaultProps };
@@ -32,7 +28,7 @@ export function ExpenseTableForm({
           className="whitespace-nowrap py-2 pl-6 font-light text-gray-900 dark:text-white [&:last-child]:pr-6"
         >
           <div className="flex flex-row items-center gap-2">
-            <Plus className={`${isError ? 'text-red-500' : 'text-gray-300'}`} size={15} />
+            <Plus className="text-gray-300" size={15} />
             <Button
               type="link"
               onClick={openForm}

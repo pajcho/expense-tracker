@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
-import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
-import { Button, Form, Input, InputRef, Modal } from 'antd';
 import { CategoryModel } from '@/models/category.model';
+import { Button, Form, Input, InputRef, Modal } from 'antd';
+import { useUpsertCategory } from '@/services/category.service';
 
 export function CategoryDialog({
   category,
@@ -12,7 +12,7 @@ export function CategoryDialog({
   onCancel: () => void;
   onSuccess: () => void;
 }>) {
-  const { upsertCategory } = React.useContext(CategoryContext) as CategoryContextType;
+  const upsertCategory = useUpsertCategory();
   const [form] = Form.useForm();
 
   const handleEscape = (event: React.KeyboardEvent) => {
@@ -34,8 +34,6 @@ export function CategoryDialog({
   };
 
   function closeDialog() {
-    // Reset mutations when form is closed
-    upsertCategory.reset();
     onCancel();
   }
 

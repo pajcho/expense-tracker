@@ -45,9 +45,9 @@ async function createExpense(req: NextApiRequest, res: NextApiResponse<ItemModel
     return res.status(200).json({
       ...newEntry,
       amount: +newEntry.amount,
-      date: newEntry.date.toDateString(),
-      createdAt: newEntry.createdAt.toDateString(),
-      updatedAt: newEntry.updatedAt.toDateString(),
+      date: newEntry.date.toISOString(),
+      createdAt: newEntry.createdAt.toISOString(),
+      updatedAt: newEntry.updatedAt.toISOString(),
     });
   } catch (error) {
     console.error('Request error', error);
@@ -66,9 +66,9 @@ async function getExpensesWithCategories(res: NextApiResponse<ItemModel[] | Resp
         return {
           ...item,
           amount: +item.amount,
-          date: item.date.toDateString(),
-          createdAt: item.createdAt.toDateString(),
-          updatedAt: item.updatedAt.toDateString(),
+          date: item.date.toISOString(),
+          createdAt: item.createdAt.toISOString(),
+          updatedAt: item.updatedAt.toISOString(),
         };
       })
     );

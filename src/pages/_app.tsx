@@ -1,9 +1,9 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
-import { Analytics } from '@vercel/analytics/react';
+import { Toaster } from 'react-hot-toast';
 import { QueryClient } from '@tanstack/query-core';
+import { Analytics } from '@vercel/analytics/react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import CategoryProvider from '@/providers/category.provider';
 
 export default function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient();
@@ -11,11 +11,10 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <CategoryProvider>
-          <Component {...pageProps} />
-        </CategoryProvider>
+        <Component {...pageProps} />
       </QueryClientProvider>
       <Analytics />
+      <Toaster position="bottom-center" />
     </>
   );
 }

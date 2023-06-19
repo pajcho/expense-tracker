@@ -3,6 +3,7 @@ import { prisma } from '@/utils/db';
 import { CategoryModel } from '@/models/category.model';
 import { Expense } from '.prisma/client';
 import { ItemModel } from '@/models/item.model';
+import { endOfDay, startOfDay } from 'date-fns';
 type ResponseMessage = { message: string; success: boolean };
 
 export default async function handler(
@@ -12,7 +13,7 @@ export default async function handler(
   if (req.method === 'POST') {
     return await createCategory(req, res);
   } else if (req.method === 'GET') {
-    return await getCategoriesWithExpenses(res);
+    return await getCategoriesWithExpenses(req, res);
   } else {
     return res.status(405).json({ message: 'Method not allowed', success: false });
   }
@@ -41,8 +42,8 @@ async function createCategory(req: NextApiRequest, res: NextApiResponse<Category
 
     return res.status(200).json({
       ...newEntry,
-      createdAt: newEntry.createdAt.toDateString(),
-      updatedAt: newEntry.updatedAt.toDateString(),
+      createdAt: newEntry.createdAt.toISOString(),
+      updatedAt: newEntry.updatedAt.toISOString(),
       expenses: mapExpenses(newEntry.expenses),
     });
   } catch (error) {
@@ -51,18 +52,39 @@ async function createCategory(req: NextApiRequest, res: NextApiResponse<Category
   }
 }
 
-async function getCategoriesWithExpenses(res: NextApiResponse<CategoryModel[] | ResponseMessage>) {
+async function getCategoriesWithExpenses(req: NextApiRequest, res: NextApiResponse<CategoryModel[] | ResponseMessage>) {
   try {
+    const query = req.query as { fromDate?: string; toDate?: string };
+
     const categories = await prisma.category.findMany({
-      include: { expenses: true },
+      include: {
+        expenses: {
+          where: {
+            date: {
+              gte: startOfDay(new Date(query.fromDate || '1990-01-01')).toISOString(),
+              lte: endOfDay(new Date(query.toDate || '2050-12-31')).toISOString(),
+            },
+          },
+        },
+      },
+      where: {
+        expenses: {
+          some: {
+            date: {
+              gte: startOfDay(new Date(query.fromDate || '1990-01-01')).toISOString(),
+              lte: endOfDay(new Date(query.toDate || '2050-12-31')).toISOString(),
+            },
+          },
+        },
+      },
     });
 
     return res.status(200).json(
       categories.map((category) => {
         return {
           ...category,
-          createdAt: category.createdAt.toDateString(),
-          updatedAt: category.updatedAt.toDateString(),
+          createdAt: category.createdAt.toISOString(),
+          updatedAt: category.updatedAt.toISOString(),
           expenses: mapExpenses(category.expenses),
         };
       })
@@ -78,9 +100,9 @@ function mapExpenses(expenses: Expense[]): ItemModel[] {
     return {
       ...expense,
       amount: +expense.amount,
-      date: expense.date.toDateString(),
-      createdAt: expense.createdAt.toDateString(),
-      updatedAt: expense.updatedAt.toDateString(),
+      date: expense.date.toISOString(),
+      createdAt: expense.createdAt.toISOString(),
+      updatedAt: expense.updatedAt.toISOString(),
     };
   });
 }

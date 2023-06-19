@@ -1,8 +1,8 @@
-import React, { PropsWithChildren } from 'react';
-import { CategoryContext, CategoryContextType } from '@/providers/category.provider';
-import { Button, DatePicker, Form, Input, InputRef, Modal } from 'antd';
 import dayjs from 'dayjs';
 import { ItemModel } from '@/models/item.model';
+import React, { PropsWithChildren } from 'react';
+import { useUpsertExpense } from '@/services/category.service';
+import { Button, DatePicker, Form, Input, InputRef, Modal } from 'antd';
 
 export function ExpenseDialog({
   expense,
@@ -15,8 +15,10 @@ export function ExpenseDialog({
   onCancel: () => void;
   onSuccess: () => void;
 }>) {
-  const { upsertExpense } = React.useContext(CategoryContext) as CategoryContextType;
+  const upsertExpense = useUpsertExpense();
   const [form] = Form.useForm();
+
+  console.log(upsertExpense.isError);
 
   const handleEscape = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
@@ -44,8 +46,6 @@ export function ExpenseDialog({
   };
 
   function closeDialog() {
-    // Reset mutations when form is closed
-    upsertExpense.reset();
     onCancel();
   }
 

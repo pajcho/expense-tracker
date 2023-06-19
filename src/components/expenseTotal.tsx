@@ -1,5 +1,5 @@
-import { money } from '@/utils/money';
 import React from 'react';
+import { money } from '@/utils/money';
 import { CategoryModel } from '@/models/category.model';
 
 export function ExpenseTotal({ categories }: { categories: CategoryModel[] }) {
